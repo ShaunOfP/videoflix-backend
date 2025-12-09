@@ -3,3 +3,6 @@ from django.apps import AppConfig
 
 class UserAuthAppConfig(AppConfig):
     name = 'user_auth_app'
+
+    def ready(self):
+        from . import signals
