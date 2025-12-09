@@ -35,9 +35,6 @@ class RegistrationSerializer(serializers.Serializer):
             "token": token
         }
 
-class LoginSerializer(serializers.Serializer):
-    pass
-
 
 class ConfirmPasswordSerializer():
     pass
