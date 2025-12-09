@@ -36,5 +36,22 @@ class RegistrationSerializer(serializers.Serializer):
         }
 
 
-class ConfirmPasswordSerializer():
-    pass
+class ConfirmPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
+
+    def save(self):
+        new_password = self.validated_data['new_password']
+        confirmed_password = self.validated_data['confirmed_password']
+
+        if new_password != confirmed_password:
+            raise serializers.ValidationError({'error': 'Passwords do not match'})
+        
+        user = self.context.get('user')
+
+        if user is None:
+            raise serializers.ValidationError({'error': 'User not provided'})
+
+        user.set_password(new_password)
+        user.save()
+        return user

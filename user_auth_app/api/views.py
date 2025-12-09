@@ -202,10 +202,21 @@ class PasswordConfirmView(CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = [ConfirmPasswordSerializer]
 
-    def post(self, request, *args, **kwargs):
-        serializer = ConfirmPasswordSerializer(request.data)
+    def post(self, request, uidb64, token):
+        try:
+            user_id = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return Response({'error': 'Invalid link'}, status=400)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({'error': 'Invalid or expired token'}, status=400)
+
+        serializer = ConfirmPasswordSerializer(
+            data=request.data, context={'user': user})
 
         if serializer.is_valid():
+            serializer.save()
             return Response({'detail': 'Your Password has been successfully reset.'}, status=200)
-
-        return Response({'error': 'Could not reset your password'}, status=400)
+        else:
+            return Response(serializer.errors, status=400)
