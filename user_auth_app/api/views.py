@@ -11,10 +11,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegistrationSerializer, ConfirmPasswordSerializer
+from .serializers import RegistrationSerializer, ConfirmPasswordSerializer, LoginSerializer
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
 from .permissions import IsRefreshTokenAvailable
+from django.conf import settings
 
 
 class RegistrationView(APIView):
@@ -78,11 +79,17 @@ class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = LoginSerializer(
+            data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
         user = serializer.user
-        tokens = serializer.validated_data
+
+        refresh = RefreshToken.for_user(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
         response = Response()
 
