@@ -207,7 +207,7 @@ class PasswordResetView(CreateAPIView):
 
 class PasswordConfirmView(CreateAPIView):
     permission_classes = [AllowAny]
-    serializer_class = [ConfirmPasswordSerializer]
+    serializer_class = ConfirmPasswordSerializer
 
     def post(self, request, uidb64, token):
         try:

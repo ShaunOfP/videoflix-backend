@@ -43,7 +43,7 @@ class ConfirmPasswordSerializer(serializers.Serializer):
 
     def save(self):
         new_password = self.validated_data['new_password']
-        confirmed_password = self.validated_data['confirmed_password']
+        confirmed_password = self.validated_data['confirm_password']
 
         if new_password != confirmed_password:
             raise serializers.ValidationError(
