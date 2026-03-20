@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'user_auth_app.apps.UserAuthAppConfig',
-    'video_management_app',
+    'video_management_app.apps.VideoManagementAppConfig',
     'django_rq',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist'

@@ -1,12 +1,19 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
+
+from video_management_app.api.serializers import VideoSerializer
+from video_management_app.models import Video
 
 class VideoListView(ListAPIView):
-    pass
+    permission_classes = [IsAuthenticated]
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+
 
 
 class VideoDetailView(RetrieveAPIView):
-    pass
+    permission_classes = [IsAuthenticated]
 
 
 class VideoSegmentView(RetrieveAPIView):
-    pass
+    permission_classes = [IsAuthenticated]
