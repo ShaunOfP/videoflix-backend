@@ -1,51 +1,44 @@
 from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient, APITestCase, force_bytes
-from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient, APITestCase
+from unittest.mock import patch
+
+
+TEST_PASSWORD = 'testpassword1'
 
 
 class UserAuthTests(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='testuser@example.com',
-            password='testpassword')
-
-        self.token = Token.objects.create(user=self.user)
         self.client = APIClient()
-        self.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.user = User.objects.create_user(
+            username='testuser1',
+            email='testuser1@example.com',
+            password=TEST_PASSWORD,
+            is_active=True
+        )
 
-    def test_user_registration(self):
+    @patch('user_auth_app.api.views.django_rq.get_queue')
+    def test_user_registration(self, mock_queue):
+        mock_queue.return_value.enqueue.return_value = None
+
         url = reverse('user-registration')
         data = {
             'email': 'testuser@example.com',
             'password': 'testpassword',
             'confirmed_password': 'testpassword'
         }
+
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
 
     def test_user_login(self):
-        self.user = User.objects.create_user(
-            email='testuser@example.com',
-            password='testpassword',
-            is_active=True
-        )
-
-        registration_url = reverse('user-registration')
-        registration_data = {
-            'email': 'testuser@example.com',
-            'password': 'testpassword',
-            'confirmed_password': 'testpassword'
-        }
-        self.client.post(registration_url, registration_data)
-
         login_url = reverse('user-login')
         login_data = {
-            'email': 'testuser@example.com',
-            'password': 'testpassword'
+            'email': self.user.email,
+            'password': TEST_PASSWORD
         }
         response = self.client.post(login_url, login_data)
         self.assertEqual(response.status_code, 200)

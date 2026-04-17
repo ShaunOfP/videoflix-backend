@@ -90,29 +90,24 @@ class ActivationView(APIView):
 
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         """
         Handles the user login process.
         Validates input data and sets the cookies.
         """
-        serializer = LoginSerializer(
-            data=request.data, context={'request': request})
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = serializer.user
-
-        refresh = RefreshToken.for_user(user)
-        tokens = {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+        access = serializer.validated_data["access"]
+        refresh = serializer.validated_data["refresh"]
 
         response = Response()
 
         response.set_cookie(
             key='access_token',
-            value=tokens['access'],
+            value=access,
             httponly=True,
             secure=settings.SECURE_COOKIES,
             samesite='Lax',
@@ -120,7 +115,7 @@ class LoginView(TokenObtainPairView):
 
         response.set_cookie(
             key='refresh_token',
-            value=tokens['refresh'],
+            value=refresh,
             httponly=True,
             secure=settings.SECURE_COOKIES,
             samesite='Lax',
@@ -129,8 +124,8 @@ class LoginView(TokenObtainPairView):
         response.data = {
             'detail': 'Login successful',
             'user': {
-                'id': user.id,
-                'username': user.username
+                'id': serializer.validated_data["user"]["id"],
+                'username': serializer.validated_data["user"]["email"]
             }
         }
 

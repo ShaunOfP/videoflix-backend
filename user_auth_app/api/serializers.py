@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -68,26 +70,46 @@ class ConfirmPasswordSerializer(serializers.Serializer):
         return user
 
 
-class LoginSerializer(serializers.Serializer):
+User = get_user_model()
+
+
+class LoginSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
-    def validate(self, data):
+    def __init__(self, *args, **kwargs):
         """
-        Validates the login data and authenticates the user.
+        Initializes the serializer and removes the username field.
         """
-        email = data.get("email")
-        password = data.get("password")
+        super().__init__(*args, **kwargs)
 
-        user = authenticate(
-            request=self.context.get("request"),
-            username=email,
-            password=password
-        )
+        if "username" in self.fields:
+            self.fields.pop("username")
 
-        if not user:
+    def validate(self, attrs):
+        """
+        Validates the login credentials and returns the token pair if valid.
+        """
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError("Invalid credentials")
 
-        self.user = user
+        if not user.check_password(password):
+            raise serializers.ValidationError("Invalid credentials")
+
+        if not user.is_active:
+            raise serializers.ValidationError("Account is not active")
+
+        data = super().validate(
+            {"username": user.username, "password": password})
+
+        data["user"] = {
+            "id": user.id,
+            "email": user.email
+        }
 
         return data
