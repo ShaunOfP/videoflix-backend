@@ -1,9 +1,10 @@
-from video_management_app.tasks import convert_480p, convert_720p, convert_360p
-from .models import Video
-from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete
 import os
 import django_rq
+from django.dispatch import receiver
+from django.db.models.signals import post_save, post_delete
+
+from video_management_app.tasks import convert_480p, convert_720p, convert_360p
+from .models import Video
 
 
 @receiver(post_save, sender=Video)

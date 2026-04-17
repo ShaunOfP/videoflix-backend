@@ -5,16 +5,9 @@ from video_management_app.api.serializers import VideoSerializer
 from video_management_app.models import Video
 
 class VideoListView(ListAPIView):
+    """
+    Returns a list of all videos in the database.
+    """
     permission_classes = [IsAuthenticated]
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-
-
-class VideoDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Video.objects.all()
-    serializer_class = VideoSerializer
-
-
-class VideoSegmentView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
