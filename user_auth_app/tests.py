@@ -44,18 +44,10 @@ class UserAuthTests(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_user_logout(self):
-        registration_url = reverse('user-registration')
-        registration_data = {
-            'email': 'testuser@example.com',
-            'password': 'testpassword',
-            'confirmed_password': 'testpassword'
-        }
-        self.client.post(registration_url, registration_data)
-
         login_url = reverse('user-login')
         login_data = {
-            'email': 'testuser@example.com',
-            'password': 'testpassword'
+            'email': self.user.email,
+            'password': TEST_PASSWORD
         }
         response = self.client.post(login_url, login_data)
         self.assertEqual(response.status_code, 200)
@@ -64,25 +56,27 @@ class UserAuthTests(APITestCase):
         response = self.client.post(logout_url)
         self.assertEqual(response.status_code, 200)
 
-    def test_password_reset(self):
-        url = reverse('password-reset')
-        password_reset_data = {
-            'email': 'testuser@example.com'
-        }
+    @patch("user_auth_app.api.views.django_rq.get_queue")
+    def test_password_reset(self, mock_queue):
+        mock_queue.return_value.enqueue.return_value = None
 
-        response = self.client.post(url, password_reset_data)
+        url = reverse('password-reset')
+
+        response = self.client.post(url, {
+            'email': self.user.email
+        })
         self.assertEqual(response.status_code, 200)
 
     def test_password_confirm(self):
-        user = User.objects.get(email='testuser@example.com')
+        user = self.user
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        url = reverse('password-reset', kwargs={'uidb64': uid, 'token': token})
+        url = reverse('password-confirm',
+                      kwargs={'uidb64': uid, 'token': token})
 
-        password_confirm_data = {
-            "new_password": "newsecurepassword",
-            "confirm_password": "newsecurepassword"
+        data = {
+            "new_password": 'newsecurepassword',
+            "confirm_password": 'newsecurepassword'
         }
-        response = self.client.post(
-            url, password_confirm_data)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
