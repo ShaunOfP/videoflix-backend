@@ -10,6 +10,9 @@ class RegistrationSerializer(serializers.Serializer):
     confirmed_password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """
+        Validates the registration data.
+        """
         if data["password"] != data["confirmed_password"]:
             raise serializers.ValidationError(
                 {"password": "Passwords do not match"})
@@ -19,6 +22,9 @@ class RegistrationSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
+        """
+        Creates a new user with the provided data and generates an activation token.
+        """
         email = validated_data["email"]
         password = validated_data["password"]
 
@@ -42,6 +48,9 @@ class ConfirmPasswordSerializer(serializers.Serializer):
     confirm_password = serializers.CharField()
 
     def save(self):
+        """
+        Saves the updated password for the user.
+        """
         new_password = self.validated_data['new_password']
         confirmed_password = self.validated_data['confirm_password']
 
@@ -64,6 +73,9 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """
+        Validates the login data and authenticates the user.
+        """
         email = data.get("email")
         password = data.get("password")
 

@@ -1,27 +1,36 @@
+import django_rq
+from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView, TokenBlacklistView
 from rest_framework.permissions import AllowAny
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import django_rq
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 
-from .serializers import RegistrationSerializer, ConfirmPasswordSerializer, LoginSerializer
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
+from .serializers import RegistrationSerializer, ConfirmPasswordSerializer, LoginSerializer
 from .permissions import IsRefreshTokenAvailable
-from django.conf import settings
 
 
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Handles the user registration process.
+        Validates the input data, creates a new user, 
+        generates an activation token, and sends an activation email to the user.
+        If the registration is successful, 
+        it returns the user's information and a token in the response.
+        If there are validation errors, it returns an error.
+        """
+
         serializer = RegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -57,6 +66,10 @@ class ActivationView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
+        """
+        Handles the account activation process 
+        when a user clicks on the activation link sent to their email.
+        """
         try:
             user_id = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=user_id)
@@ -79,6 +92,10 @@ class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles the user login process.
+        Validates input data and sets the cookies.
+        """
         serializer = LoginSerializer(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -124,6 +141,10 @@ class LogoutView(TokenBlacklistView):
     permission_classes = [IsRefreshTokenAvailable]
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles the logout process 
+        by blacklisting the refresh token and deleting the cookies.
+        """
         refresh_token = request.COOKIES.get('refresh_token')
 
         if refresh_token is None:
@@ -148,6 +169,9 @@ class CustomTokenRefreshView(TokenRefreshView):
     permission_classes = [IsRefreshTokenAvailable]
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles the token refresh process.
+        """
         refresh_token = request.COOKIES.get('refresh_token')
         if refresh_token is None:
             return Response({'error': 'Refresh-Token missing'}, status=400)
@@ -179,6 +203,9 @@ class PasswordResetView(CreateAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles the password reset request.
+        """
         email = request.data.get('email')
 
         if not email:
@@ -210,6 +237,10 @@ class PasswordConfirmView(CreateAPIView):
     serializer_class = ConfirmPasswordSerializer
 
     def post(self, request, uidb64, token):
+        """
+        Handles the password reset confirmation process 
+        when a user clicks on the password reset link sent to their email.
+        """
         try:
             user_id = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=user_id)
