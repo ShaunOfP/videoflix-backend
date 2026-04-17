@@ -10,9 +10,10 @@ class VideoListView(ListAPIView):
     serializer_class = VideoSerializer
 
 
-
 class VideoDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
 
 
 class VideoSegmentView(RetrieveAPIView):
