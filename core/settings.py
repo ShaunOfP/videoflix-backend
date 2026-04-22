@@ -32,7 +32,7 @@ DEBUG = os.getenv('DEBUG', True)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+    "CSRF_TRUSTED_ORIGINS", default="http://localhost:5500").split(",")
 
 SECURE_COOKIES = not DEBUG
 
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'video_management_app.apps.VideoManagementAppConfig',
     'django_rq',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -65,10 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-]
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
