@@ -3,19 +3,19 @@ import django_rq
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 
-from video_management_app.tasks import convert_480p, convert_720p, convert_360p
+from video_management_app.tasks import convert_480p, convert_720p, convert_1080p
 from .models import Video
 
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
     """
-    When a new video is created, this will convert the video to 480p, 720p, and 360p formats.
+    When a new video is created, this will convert the video to 480p, 720p, and 1080p formats.
     """
     if created:
         queue = django_rq.get_queue('default', autocommit=True)
         queue.enqueue(convert_480p, instance.video_file.path)
-        queue.enqueue(convert_360p, instance.video_file.path)
+        queue.enqueue(convert_1080p, instance.video_file.path)
         queue.enqueue(convert_720p, instance.video_file.path)
 
 

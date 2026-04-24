@@ -21,11 +21,11 @@ def convert_720p(source):
     subprocess.run(cmd)
 
 
-def convert_360p(source):
+def convert_1080p(source):
     """
-    Converts the video into 360p resolution
+    Converts the video into 1080p resolution
     """
-    target = source + '_360p.mp4'
-    cmd = ['ffmpeg', '-i', source, '-s', 'hd360', '-c:v', 'libx264',
+    target = source + '_1080p.mp4'
+    cmd = ['ffmpeg', '-i', source, '-s', 'hd1080', '-c:v', 'libx264',
            '-crf', '23', '-c:a', 'aac', '-strict', '-2', target]
     subprocess.run(cmd)

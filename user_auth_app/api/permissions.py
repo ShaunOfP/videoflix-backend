@@ -10,3 +10,14 @@ class IsRefreshTokenAvailable(BasePermission):
         if not refresh_token:
             return False
         return True
+
+
+class IsAuthenticatedWithAccessToken(BasePermission):
+    def has_permission(self, request, view):
+        """
+        Checks if the access token is available in the request cookies.
+        """
+        access_token = request.COOKIES.get('access_token')
+        if not access_token:
+            return False
+        return True

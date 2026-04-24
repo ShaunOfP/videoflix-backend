@@ -1,6 +1,8 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
+from user_auth_app.api.permissions import IsAuthenticatedWithAccessToken
+
 from video_management_app.api.serializers import VideoSerializer
 from video_management_app.models import Video
 
@@ -9,16 +11,16 @@ class VideoListView(ListAPIView):
     """
     Returns a list of all videos in the database.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedWithAccessToken]
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
 
 
 # class VideoDetailView(RetrieveAPIView):
-#     permission_classes = [IsAuthenticated]
+#     permission_classes = [IsAuthenticatedWithAccessToken]
 #     queryset = Video.objects.all()
 #     serializer_class = VideoSerializer
 
 
 # class VideoSegmentView(RetrieveAPIView):
-#     permission_classes = [IsAuthenticated]
+#     permission_classes = [IsAuthenticatedWithAccessToken]
