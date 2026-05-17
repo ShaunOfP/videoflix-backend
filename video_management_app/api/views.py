@@ -1,6 +1,6 @@
 import os
 
-from django.http import FileResponse, StreamingHttpResponse
+from django.http import StreamingHttpResponse
 from django.views import View
 from rest_framework.generics import Http404, ListAPIView
 
