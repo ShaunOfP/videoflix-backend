@@ -16,13 +16,6 @@ A detailed guide to cloning a repository can be found [here](https://docs.github
 ## Usage
 Open the project in your Code editor and open the Terminal for the project.
 
-
-Use the package manager [pip](https://pypi.org/project/pip/#files) to install the dependencies.
-
-```bash
-pip install -r requirements.txt
-```
-
 Create a virtual environment in the project folder
 ```bash
 python -m venv env
@@ -35,6 +28,12 @@ Then start a virtual environment.
 
 #Unix
 source .env/bin/activate
+```
+
+Use the package manager [pip](https://pypi.org/project/pip/#files) to install the dependencies.
+
+```bash
+pip install -r requirements.txt
 ```
 
 If you want to test this repository without a frontend you need to have software like [Postman](https://www.postman.com/downloads/).
