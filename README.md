@@ -36,6 +36,8 @@ Use the package manager [pip](https://pypi.org/project/pip/#files) to install th
 pip install -r requirements.txt
 ```
 
+If you see the error 'exec ./backend.entrypoint.sh: no such file or directory' make sure that you save the backend.entrypoint.sh as LF instead of CRLF!
+
 If you want to test this repository without a frontend you need to have software like [Postman](https://www.postman.com/downloads/).
 
 ## Configuration
