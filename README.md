@@ -16,20 +16,6 @@ A detailed guide to cloning a repository can be found [here](https://docs.github
 ## Usage
 Open the project in your Code editor and open the Terminal for the project.
 
-Create a virtual environment in the project folder
-```bash
-python -m venv env
-```
-
-Then start a virtual environment.
-```bash
-#Windows
-.\env\Scripts\Activate
-
-#Unix
-source .env/bin/activate
-```
-
 Use the package manager [pip](https://pypi.org/project/pip/#files) to install the dependencies.
 
 ```bash
