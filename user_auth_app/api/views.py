@@ -11,6 +11,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
+from django.shortcuts import redirect
 
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
@@ -44,7 +45,7 @@ class RegistrationView(APIView):
             queue = django_rq.get_queue("default")
             queue.enqueue(
                 send_activation_mail,
-                user.email,
+                user,
                 activation_link,
             )
 
@@ -85,7 +86,7 @@ class ActivationView(APIView):
         user.is_active = True
         user.save()
 
-        return Response({'message': 'Account successfully activated.'}, status=200)
+        return redirect("http://localhost:5500/pages/auth/login.html")
 
 
 class LoginView(TokenObtainPairView):
@@ -253,3 +254,19 @@ class PasswordConfirmView(CreateAPIView):
             return Response({'detail': 'Your Password has been successfully reset.'}, status=200)
         else:
             return Response(serializer.errors, status=400)
+
+    def get(self, request, uidb64, token):
+        """
+        Handles the GET request for the password reset confirmation link.
+        Validates the token and redirects to the password reset page if valid.
+        """
+        try:
+            user_id = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return Response({'error': 'Invalid link'}, status=400)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({'error': 'Invalid or expired token'}, status=400)
+
+        return redirect(f"http://localhost:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}")
