@@ -2,7 +2,7 @@
 
 Videoflix is a Netflix clone made for training purposes.
 
-This repository contains the backend for the Videoflix-Project. The Frontend is provided by the Developer Akademie and can be found here: https://github.com/Developer-Akademie-Backendkurs/project.Videoflix
+This repository contains the backend for the Videoflix-Project. The Frontend is provided by the Developer Akademie and can be found [here](https://github.com/Developer-Akademie-Backendkurs/project.Videoflix)
 
 ## Installation
 
@@ -16,10 +16,21 @@ A detailed guide to cloning a repository can be found [here](https://docs.github
 ## Usage
 Open the project in your Code editor and open the Terminal for the project.
 
+Then create a .env file from the .env.template using this command:
+```bash
+cp .env.template .env
+```
+Make sure to enter your relevant informations here!
+
 Use the package manager [pip](https://pypi.org/project/pip/#files) to install the dependencies.
 
 ```bash
 pip install -r requirements.txt
+```
+
+Open Docker Desktop and run the docker via the command:
+```bash
+docker compose up --build
 ```
 
 If you see the error 'exec ./backend.entrypoint.sh: no such file or directory' make sure that you save the backend.entrypoint.sh as LF instead of CRLF!
