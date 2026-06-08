@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <img src="cid:logo" alt="Videoflix"/>
+    <div style="display: flex; justify-content: center; ">
+      <img style="height: 50px; width: 400px;" src="cid:logo" alt="Videoflix" />
+    </div>
     <p>
-      Dear <span style="color: blue;">DanSchneider123</span>,
+      Dear <span style="color: blue;">{{ username }}</span>,
     </p>
     <p>
       Thank you for registering with <span style="color: blue;">Videoflix</span>. To complete your registration and verify your email address, please click the link below:
     </p>
+    <br />
     <a href="{{ activation_link }}" style="display: inline-block; padding: 10px 15px; background-color: #1222d9; color: white; text-decoration: none; border-radius: 20px;">Activate Your Account</a>
+    <br />
     <p>If you did not create an account with us, please disregard this email.</p>
     <p>Best regards,</p>
+    <br />
     <span>Your Videoflix Team.</span>
   </body>
 </html>
