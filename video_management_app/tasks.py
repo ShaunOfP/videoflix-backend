@@ -1,6 +1,10 @@
 import os
+from pathlib import Path
 import subprocess
+
+from click import File
 from core import settings
+from video_management_app.models import Video
 
 
 def convert_480p(source, video_id):
@@ -92,3 +96,31 @@ def convert_1080p(source, video_id):
     ]
 
     subprocess.run(cmd, check=True)
+
+
+def generate_thumbnail(source, video_id):
+    """
+    Generates a thumbnail for the video.
+    """
+    video = Video.objects.get(id=video_id)
+
+    thumb_name = Path(source).stem + ".jpg"
+    thumb_path = Path(settings.MEDIA_ROOT) / "thumbnails" / thumb_name
+    thumb_path.parent.mkdir(parents=True, exist_ok=True)
+
+    subprocess.run([
+        "ffmpeg",
+        "-i", source,
+        "-ss", "00:00:00.1",
+        "-vframes", "1",
+        "-q:v", "2",
+        str(thumb_path),
+    ], check=True)
+
+    with open(thumb_path, "rb") as f:
+        video.thumbnail_url.save(
+            thumb_name,
+            f,
+            save=False
+        )
+    video.save(update_fields=["thumbnail_url"])

@@ -15,7 +15,7 @@ class VideoListView(ListAPIView):
     """
     Returns a list of all videos in the database.
     """
-    permission_classes = [IsAuthenticatedWithAccessToken]
+    # permission_classes = [IsAuthenticatedWithAccessToken]
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
 

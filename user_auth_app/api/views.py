@@ -31,9 +31,7 @@ class RegistrationView(APIView):
         it returns the user's information and a token in the response.
         If there are validation errors, it returns an error.
         """
-
         serializer = RegistrationSerializer(data=request.data)
-
         if serializer.is_valid():
             data = serializer.save()
             user = data["user"]
@@ -68,7 +66,7 @@ class ActivationView(APIView):
 
     def get(self, request, uidb64, token):
         """
-        Handles the account activation process 
+        Handles the account activation process
         when a user clicks on the activation link sent to their email.
         """
         try:
@@ -111,7 +109,8 @@ class LoginView(TokenObtainPairView):
             value=access,
             httponly=True,
             secure=settings.SECURE_COOKIES,
-            samesite='Lax',
+            samesite='None',
+            path='/'
         )
 
         response.set_cookie(
@@ -119,7 +118,8 @@ class LoginView(TokenObtainPairView):
             value=refresh,
             httponly=True,
             secure=settings.SECURE_COOKIES,
-            samesite='Lax',
+            samesite='None',
+            path='/'
         )
 
         response.data = {
@@ -155,8 +155,8 @@ class LogoutView(TokenBlacklistView):
         response = Response(
             {'detail': 'Logout successful! All tokens will be deleted. Refresh token is now invalid.'}, status=200)
 
-        response.delete_cookie('access_token', samesite='Lax')
-        response.delete_cookie('refresh_token', samesite='Lax')
+        response.delete_cookie('access_token', path='/', samesite='None')
+        response.delete_cookie('refresh_token', path='/', samesite='None')
 
         return response
 
@@ -188,8 +188,9 @@ class CustomTokenRefreshView(TokenRefreshView):
             key='access_token',
             value=access_token,
             httponly=True,
-            secure=True,
-            samesite='Lax'
+            secure=settings.SECURE_COOKIES,
+            samesite='None',
+            path='/'
         )
 
         return response
