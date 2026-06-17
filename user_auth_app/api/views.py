@@ -11,7 +11,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
@@ -84,7 +84,7 @@ class ActivationView(APIView):
         user.is_active = True
         user.save()
 
-        return redirect("http://localhost:5500/pages/auth/login.html")
+        return HttpResponseRedirect("http://localhost:5500/pages/auth/login.html")
 
 
 class LoginView(TokenObtainPairView):
@@ -270,4 +270,4 @@ class PasswordConfirmView(CreateAPIView):
         if not default_token_generator.check_token(user, token):
             return Response({'error': 'Invalid or expired token'}, status=400)
 
-        return redirect(f"http://localhost:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}")
+        return HttpResponseRedirect(f"http://localhost:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}")
