@@ -12,11 +12,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.middleware.csrf import get_token
 
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
 from .serializers import RegistrationSerializer, ConfirmPasswordSerializer, LoginSerializer
-from .permissions import IsRefreshTokenAvailable
+from .permissions import IsRefreshTokenAvailable, IsAuthenticatedWithAccessToken
 
 
 class RegistrationView(APIView):
@@ -99,27 +100,25 @@ class LoginView(TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        access = serializer.validated_data["access"]
-        refresh = serializer.validated_data["refresh"]
+        access_token = serializer.validated_data["access"]
+        refresh_token = serializer.validated_data["refresh"]
 
         response = Response()
 
         response.set_cookie(
             key='access_token',
-            value=access,
+            value=access_token,
             httponly=True,
-            secure=settings.SECURE_COOKIES,
+            secure=False,
             samesite='None',
-            path='/'
         )
 
         response.set_cookie(
             key='refresh_token',
-            value=refresh,
+            value=refresh_token,
             httponly=True,
-            secure=settings.SECURE_COOKIES,
+            secure=False,
             samesite='None',
-            path='/'
         )
 
         response.data = {
@@ -188,9 +187,8 @@ class CustomTokenRefreshView(TokenRefreshView):
             key='access_token',
             value=access_token,
             httponly=True,
-            secure=settings.SECURE_COOKIES,
+            secure=False,
             samesite='None',
-            path='/'
         )
 
         return response
