@@ -17,7 +17,7 @@ from django.middleware.csrf import get_token
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
 from .serializers import RegistrationSerializer, ConfirmPasswordSerializer, LoginSerializer
-from .permissions import IsRefreshTokenAvailable, IsAuthenticatedWithAccessToken
+from .permissions import IsRefreshTokenAvailable
 
 
 class RegistrationView(APIView):
@@ -109,7 +109,7 @@ class LoginView(TokenObtainPairView):
             key='access_token',
             value=access_token,
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='None',
         )
 
@@ -117,7 +117,7 @@ class LoginView(TokenObtainPairView):
             key='refresh_token',
             value=refresh_token,
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='None',
         )
 
@@ -187,7 +187,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             key='access_token',
             value=access_token,
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='None',
         )
 

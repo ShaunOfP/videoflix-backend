@@ -31,10 +31,6 @@ SECRET_KEY = os.getenv(
 # DEBUG = os.getenv('DEBUG', True)
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", default="http://localhost:5500").split(",")
-
 SECURE_COOKIES = not DEBUG
 
 # Application definition
@@ -70,6 +66,10 @@ MIDDLEWARE = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS", default="http://localhost:5500").split(",")
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
+CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS", default="http://localhost:5500").split(",")
 
 ROOT_URLCONF = 'core.urls'
