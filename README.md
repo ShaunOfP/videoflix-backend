@@ -22,12 +22,6 @@ cp .env.template .env
 ```
 Make sure to enter your relevant informations here!
 
-Use the package manager [pip](https://pypi.org/project/pip/#files) to install the dependencies.
-
-```bash
-pip install -r requirements.txt
-```
-
 Open Docker Desktop and run the docker via the command:
 ```bash
 docker compose up --build
