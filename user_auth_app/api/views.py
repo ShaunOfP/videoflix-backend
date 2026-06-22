@@ -13,6 +13,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.middleware.csrf import get_token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from user_auth_app.utils.send_mail import send_activation_mail
 from user_auth_app.utils.reset_password import send_reset_mail
@@ -92,6 +94,7 @@ class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
         """
         Handles the user login process.
@@ -102,6 +105,7 @@ class LoginView(TokenObtainPairView):
 
         access_token = serializer.validated_data["access"]
         refresh_token = serializer.validated_data["refresh"]
+        csrf_token = get_token(request)
 
         response = Response()
 
@@ -123,6 +127,7 @@ class LoginView(TokenObtainPairView):
 
         response.data = {
             'detail': 'Login successful',
+            'csrfToken': csrf_token,
             'user': {
                 'id': serializer.validated_data["user"]["id"],
                 'username': serializer.validated_data["user"]["email"]
