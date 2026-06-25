@@ -140,6 +140,7 @@ class LoginView(TokenObtainPairView):
 class LogoutView(TokenBlacklistView):
     permission_classes = [IsRefreshTokenAvailable]
 
+    @method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
         """
         Handles the logout process 
